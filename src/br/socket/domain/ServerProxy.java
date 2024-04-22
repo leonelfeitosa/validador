@@ -1,24 +1,33 @@
 package br.socket.domain;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 
 public class ServerProxy extends  AbstractProxy{
 
 
-	public static void main(String[] args) {
-		String serverName = args[0];
-		Integer serverPort = Integer.valueOf(args[1]);
-		String containerIp = args[2];
-		Integer containerPort = Integer.valueOf(args[3]);
-		Integer queueServerMaxSize = Integer.valueOf(args[4]);
-		Integer qtdContainers = Integer.valueOf(args[5]); //as portas destinos deverão estar em sequência. Ex: containerPort1 3000, containerPort2 3001, etc...
+	public static void main(String[] args) throws IOException {
+
+		Properties prop = new Properties();
+		String currentDir = System.getProperty("user.dir");
+		String configPath = currentDir + "/server.properties";
+
+		FileInputStream file = new FileInputStream(configPath);
+		prop.load(file);
+
+		System.out.println(prop.getProperty("serverName"));
+
+		String serverName = prop.getProperty("serverName");;
+		Integer serverPort = Integer.valueOf(prop.getProperty("serverPort"));
+		String containerIp = prop.getProperty("containerIp");;
+		Integer containerPort = Integer.valueOf(prop.getProperty("containerPort"));
+		Integer queueServerMaxSize = Integer.valueOf(prop.getProperty("queueServerMaxSize"));
+		Integer qtdContainers = Integer.valueOf(prop.getProperty("qtdContainers")); //as portas destinos deverão estar em sequência. Ex: containerPort1 3000, containerPort2 3001, etc...
 
 		if(qtdContainers>1) {
 			List<TargetAddress> lt = new ArrayList<TargetAddress>();

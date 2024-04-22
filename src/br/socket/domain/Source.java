@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * O Source apesar de herdar de AbstractProxy funciona apenas como um gerador de dados sintéticos.
@@ -13,15 +14,26 @@ import java.util.List;
  */
 public class Source extends  AbstractProxy{
 
-    public static void main(String[] args) {
-        Integer sourcePort = Integer.valueOf(args[0]);
-        String serverIp = args[1];
-        Integer serverPort = Integer.valueOf(args[2]);
-        long numberOfRequests = Long.parseLong(args[3]);
-        long arrivalDelay = Long.parseLong(args[4]);
-        Double MRTFromModel = Double.valueOf(args[5]);
+    public static void main(String[] args) throws IOException {
 
-        new Source("source", sourcePort, new TargetAddress(serverIp,serverPort) ,  numberOfRequests, arrivalDelay, MRTFromModel).start();
+        Properties prop = new Properties();
+
+        String currentDir = System.getProperty("user.dir");
+        String configPath = currentDir + "/source.properties";
+
+        FileInputStream file = new FileInputStream(configPath);
+        prop.load(file);
+
+        System.out.println(prop.getProperty("sourcePort"));
+
+        Integer targetPort = Integer.parseInt(prop.getProperty("sourcePort"));
+        String serverIp = prop.getProperty("serverIp");
+        Integer serverPort = Integer.parseInt(prop.getProperty("serverPort"));
+        long numberOfRequests = Long.parseLong(prop.getProperty("numberOfRequests"));
+        long arrivalDelay = Long.parseLong(prop.getProperty("arrivalDelay"));
+        Double MRTFromModel = Double.parseDouble(prop.getProperty("MRTFromModel"));
+
+        new Source("source", targetPort, new TargetAddress(serverIp,serverPort) ,  numberOfRequests, arrivalDelay, MRTFromModel).start();
     }
 
 
