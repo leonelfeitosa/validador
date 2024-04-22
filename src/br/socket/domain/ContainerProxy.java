@@ -1,23 +1,35 @@
 package br.socket.domain;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.util.Properties;
 
 
 public class ContainerProxy extends AbstractProxy {
 
 
-	public static void main(String[] args) {
-		Integer containerPort = Integer.valueOf(args[0]);
-		Integer sourcePort = Integer.valueOf(args[1]);
-		double seviceTime = Double.parseDouble(args[2]);
-		String containerName = args[3];
-		String targetIp = args[4];
-		boolean targetIsSource = Boolean.parseBoolean(args[5]);
+	public static void main(String[] args) throws IOException {
 
-		new ContainerProxy(containerName, containerPort, new TargetAddress(targetIp,sourcePort), seviceTime, targetIsSource).start();
+		Properties prop = new Properties();
+
+		String currentDir = System.getProperty("user.dir");
+		String configPath = currentDir + "/container.properties";
+
+		FileInputStream file = new FileInputStream(configPath);
+		prop.load(file);
+
+
+		System.out.println(prop.getProperty("sourcePort"));
+
+		Integer containerPort = Integer.parseInt(prop.getProperty("containerPort"));
+		Integer sourcePort = Integer.parseInt(prop.getProperty("sourcePort"));
+		double serviceTime = Double.parseDouble(prop.getProperty("serviceTime"));
+		String containerName = prop.getProperty("containerName");
+		String targetIp = prop.getProperty("targetIp");
+		boolean targetIsSource = Boolean.parseBoolean(prop.getProperty("targetIsSource"));
+
+
+		new ContainerProxy(containerName, containerPort, new TargetAddress(targetIp,sourcePort), serviceTime, targetIsSource).start();
 	}
 
 	private double seviceTime;
@@ -97,7 +109,7 @@ public class ContainerProxy extends AbstractProxy {
 		stringSplited = receivedMessage.split(";");
 		lastRegisteredTimeStampString = stringSplited[stringSplited.length - 1];
 		long timeNow = System.currentTimeMillis();
-		receivedMessage += timeNow + ";"+ (timeNow- Long.parseLong(lastRegisteredTimeStampString.trim()))+";";
+		receivedMessage += timeNow + ";" + (timeNow - Long.parseLong(lastRegisteredTimeStampString.trim())) + ";";
 		return receivedMessage;
 	}
 
